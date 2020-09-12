@@ -9,3 +9,6 @@ So there's like 5 papers I'm putting here best to read it in this order because 
 
 Optional but also an interesting read:
   5)Obtaining Multiple Separate Food Sources: Behavioural Intelligence in the Physarum Plasmodium
+
+Update:
+Added another paper i.e "Mechanism of signal propagation in Physarum polycephalum"
