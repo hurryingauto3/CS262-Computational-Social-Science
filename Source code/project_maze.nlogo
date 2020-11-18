@@ -26,8 +26,9 @@ to setup-maze
   ask patches with [pycor = max-pycor or pycor = min-pycor] [
     set pcolor white
   ]
-  repeat 100000[make-maze]
+  repeat 5000[make-maze]
   kill
+  make-turtles
   reset-ticks
 end
 
@@ -110,6 +111,14 @@ to kill
   ask turtles [ die ]
 end
 
+to make-turtles
+  create-turtles 1000[set shape "dot" setxy random-xcor random-ycor]
+  ask turtles[if [ pcolor ] of patch-here = white [ die ]]
+  ask turtles[let nearest-neighbor min-n-of 2 other turtles [ distance myself ]
+    create-links-with nearest-neighbor]
+  ask links[set color lput 125 extract-rgb color]
+    end
+
 to-report edges
     if Difficulty = "Easy" [ report count patches with [count neighbors != 8] - 6 ]
     if Difficulty = "Medium" [ report max-pycor / 3 ]
@@ -119,11 +128,11 @@ end
 GRAPHICS-WINDOW
 117
 12
-780
-426
+615
+511
 -1
 -1
-5.0
+10.0
 1
 10
 1
@@ -131,12 +140,12 @@ GRAPHICS-WINDOW
 1
 0
 0
+0
 1
-1
--65
-65
--40
-40
+-24
+24
+-24
+24
 0
 0
 1
