@@ -1,0 +1,20 @@
+
+1. Generate Maze
+
+	http://ccl.northwestern.edu/netlogo/models/community/maze-maker-2004
+	http://ccl.northwestern.edu/netlogo/models/community/THEmazegame
+	http://ccl.northwestern.edu/netlogo/models/community/BAM%20Maze%20Generator2
+
+2. Replication of Slime
+
+Replicate the hollow tubular structure of the bacteria through connected turtles. 
+
+
+	3.1 Pheromones (Visited Regions)
+
+		http://igm.rit.edu/~nd/sims/slime.html
+		Ant Lines models
+
+	3.2 Location of Food
+
+4. Optimization Using Links

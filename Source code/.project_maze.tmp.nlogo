@@ -125,7 +125,7 @@ to make-edges
     ;set midptx (xcor of myself + xcor of nearest-neighbor) / 2]
     ;set midpty (ycor of myself + ycor of nearest-neighbor) / 2]
   ask links[set color yellow]
-    if link-neighbors = nobody [die]]
+  ask turtles [if link-neighbors = nobody [die]]]
 end
 
 to make-turtles
