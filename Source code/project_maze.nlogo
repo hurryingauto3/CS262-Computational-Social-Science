@@ -122,10 +122,28 @@ to make-edges
  ask turtles[
     let nearest-neighbor min-n-of 1 other turtles [ distance myself ]
     create-links-with nearest-neighbor
-    ;set midptx (xcor of myself + xcor of nearest-neighbor) / 2]
-    ;set midpty (ycor of myself + ycor of nearest-neighbor) / 2]
-  ask links[set color yellow]
-    if link-neighbors = nobody [die]]
+    if link-neighbors = nobody [die]
+]
+
+  ask links [
+    set color yellow
+
+    ; finds out the midpoint of a link
+    set midptx (([xcor] of end2 + [xcor] of end1) / 2)
+    set midpty (([ycor] of end2 + [ycor] of end1) / 2)
+    let m_midpty midpty
+    let m_midptx midptx
+
+    ; checks if midpoint lies over a white patch
+    ask patch midptx midpty [if pcolor = white [
+      ask links with [midptx = m_midptx and midpty = m_midpty]
+      [
+        ; kills the link if its over a white patch
+        die
+      ]
+      ]
+    ]
+  ]
 end
 
 to make-turtles
@@ -240,7 +258,7 @@ CHOOSER
 Difficulty
 Difficulty
 "Easy" "Medium" "Hard"
-2
+0
 
 BUTTON
 4
