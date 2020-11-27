@@ -2,7 +2,7 @@
 ;; http://ccl.northwestern.edu/netlogo/models/community/BAM%20Maze%20Generator2
 
 patches-own [ xxx ]
-links-own [midptx midpty]
+links-own [midptx midpty midptx1 midpty1 midptx2 midpty2]
 
 to setup-maze
   clear-all
@@ -25,7 +25,7 @@ to setup-maze
   ask patches with [pycor = max-pycor or pycor = min-pycor] [
     set pcolor white
   ]
-  repeat 5000[make-maze]
+  repeat 500[make-maze]
   kill
   reset-ticks
 end
@@ -120,9 +120,9 @@ end
 
 to make-edges
  ask turtles[
-    let nearest-neighbor min-n-of 1 other turtles [ distance myself ]
+    let nearest-neighbor min-n-of 15 other turtles [ distance myself ]
     create-links-with nearest-neighbor
-    if link-neighbors = nobody [die]
+
 ]
 
   ask links [
@@ -134,6 +134,16 @@ to make-edges
     let m_midpty midpty
     let m_midptx midptx
 
+    set midptx1 (([xcor] of end1 + midptx) / 2)
+    set midpty1 (([ycor] of end1 + midpty) / 2)
+    let m_midpty1 midpty1
+    let m_midptx1 midptx1
+
+    set midptx2 (([xcor] of end2 + midptx) / 2)
+    set midpty2 (([ycor] of end2 + midpty) / 2)
+    let m_midpty2 midpty2
+    let m_midptx2 midptx2
+
     ; checks if midpoint lies over a white patch
     ask patch midptx midpty [if pcolor = white [
       ask links with [midptx = m_midptx and midpty = m_midpty]
@@ -141,13 +151,86 @@ to make-edges
         ; kills the link if its over a white patch
         die
       ]
+    ]]
+
+    ask patch midptx1 midpty1 [if pcolor = white [
+      ask links with [midptx1 = m_midptx1 and midpty1 = m_midpty1]
+      [
+        ; kills the link if its over a white patch
+        die
+      ]
+    ]]
+
+    ask patch midptx2 midpty2 [if pcolor = white [
+      ask links with [midptx2 = m_midptx2 and midpty2 = m_midpty2]
+      [
+        ; kills the link if its over a white patch
+        die
+      ]
       ]
     ]
   ]
+
+  ask turtles[ if link-neighbors = nobody[die]]
+end
+
+to make-edges2
+ ask turtles[
+    let nearest-neighbor min-n-of 15 other turtles [ distance myself ]
+    create-links-with nearest-neighbor with [not link-neighbor? myself]
+]
+
+  ask links [
+    set color yellow
+
+    ; finds out the midpoint of a link
+    set midptx (([xcor] of end2 + [xcor] of end1) / 2)
+    set midpty (([ycor] of end2 + [ycor] of end1) / 2)
+    let m_midpty midpty
+    let m_midptx midptx
+
+    set midptx1 (([xcor] of end1 + midptx) / 2)
+    set midpty1 (([ycor] of end1 + midpty) / 2)
+    let m_midpty1 midpty1
+    let m_midptx1 midptx1
+
+    set midptx2 (([xcor] of end2 + midptx) / 2)
+    set midpty2 (([ycor] of end2 + midpty) / 2)
+    let m_midpty2 midpty2
+    let m_midptx2 midptx2
+
+    ; checks if midpoint lies over a white patch
+    ask patch midptx midpty [if pcolor = white [
+      ask links with [midptx = m_midptx and midpty = m_midpty]
+      [
+        ; kills the link if its over a white patch
+        die
+      ]
+    ]]
+
+    ask patch midptx1 midpty1 [if pcolor = white [
+      ask links with [midptx1 = m_midptx1 and midpty1 = m_midpty1]
+      [
+        ; kills the link if its over a white patch
+        die
+      ]
+    ]]
+
+    ask patch midptx2 midpty2 [if pcolor = white [
+      ask links with [midptx2 = m_midptx2 and midpty2 = m_midpty2]
+      [
+        ; kills the link if its over a white patch
+        die
+      ]
+      ]
+    ]
+  ]
+
+  ask turtles[ if link-neighbors = nobody[die]]
 end
 
 to make-turtles
-  create-turtles 6000[set shape "dot" setxy random-xcor random-ycor
+  create-turtles num-agents[set shape "dot" setxy random-xcor random-ycor
   set color yellow]
   ask turtles[if[ pcolor ] of patch-here = white [ die ]]
 
@@ -158,15 +241,47 @@ to-report edges
     if Difficulty = "Medium" [ report max-pycor / 3 ]
     if Difficulty = "Hard" [ report 1 ]
 end
+
+to go
+  if ticks = 50[stop]
+  ask turtles[
+    if [pcolor] of patch-here = white [die]
+    if random-float 1 > prob_static and [pcolor] of patch-here != red[
+
+    let face-to min-one-of link-neighbors [
+      one-of list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height
+    ]
+
+    ifelse (face-to = nobody) or random-float 1 < prob_random[facexy random-xcor random-ycor][face face-to]
+
+    if can-move? 0.3[
+      if [pcolor] of patch-ahead 0.3 != white [fd 0.3] ]
+    ]
+
+    if count link-neighbors > 35 and random-float 1 < prob-reproduce [hatch 1[set shape "dot" setxy [xcor] of myself + random-float 0.2 - 0.1 [ycor] of myself + random-float 0.2 - 0.1
+
+      set color yellow]]
+
+
+  ]
+
+make-edges2
+  tick
+end
+
+; we need to program:
+; cluster removals (end)
+; optimization problem
+;
 @#$#@#$#@
 GRAPHICS-WINDOW
 117
 12
-909
-805
+582
+478
 -1
 -1
-19.122
+9.0
 1
 10
 1
@@ -176,10 +291,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--20
-20
--20
-20
+-10
+10
+-10
+10
 0
 0
 1
@@ -311,58 +426,84 @@ NIL
 NIL
 1
 
+SLIDER
+1
+482
+173
+515
+num-agents
+num-agents
+0
+6000
+1108.0
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+21
+428
+84
+461
+NIL
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+588
+318
+760
+351
+prob-reproduce
+prob-reproduce
+0
+1
+0.16
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+715
+195
+887
+228
+prob_static
+prob_static
+0
+1
+0.389
+0.001
+1
+NIL
+HORIZONTAL
+
+SLIDER
+867
+297
+1039
+330
+prob_random
+prob_random
+0
+1
+0.624
+0.001
+1
+NIL
+HORIZONTAL
+
 @#$#@#$#@
-## WHAT IS IT?
-
-A demonstration of the BAM maze generating algorithm. This model will randomly generate a maze with 1 unique solution to get from one red patch to the other (without crossing the white walls). The maze can be saved as a .png image file. 
-
-## HOW IT WORKS
-
-This model uses the slides to create 2 red patches (right and left). It then sets 2 distinct white lines (above and below). Finally, the model generates random white lines connected either to the "above" white line or the "below" one - but never to both of them! This algorithm guarentees that there will remain black space between the white lines, which is the uniqe solution to the maze.
-
-## HOW TO USE IT
-
-Press "Setup" to start.
-Press "Go Forever" to generate the maze. Press again once you think the maze is done to your liking.
-Press "Clean" to remove all the remaining turtles.
-
-If you like it, press "Export Maze" to save it as a .png file. 
-
-You can use the sliders to change the vertical position of the red patches (Start and Finish). You can also change the difficulty level (Easy, Medium, or Hard).
-
-Try to solve the maze!
-
-## DIFFICULTY LEVELS
-
-The difficulty levels are only an estimate. The difference between them is in the amount of turtles used to create the maze. The more turtles, the more homogenous the random pattern becomes, and thus the maze is easir to solve on average.
-
-However, it takes a significantly shorter time to create easy mazes.
-
-## THINGS TO NOTICE
-
-Use the sliders and change the world dimensions. When is the maze most difficult?
-
-This is a really inefficient implementation of the algorithm as every tick many turtles die and are reborn.
-
-## EXTENDING THE MODEL
-
-You may change the size of the world at any time. I recommend using 65*40.
-(please do not change the world wrapping - it will cause a bug).
-
-There are many things which I would like to extend:
-
-1. improve efficiency
-2. control the random downhill movement a bit more
-3. generate patterns
-4. make the space between white lines be more than a single patch size
-5. improve the code (it is way too complex)
-6. make larger steps and different angles of movement
-
-## CREDITS AND REFERENCES
-
-Benjamin Menashe, Instagram @benjamaze.original
-
-bmenashe94@gmail.com
 @#$#@#$#@
 default
 true
