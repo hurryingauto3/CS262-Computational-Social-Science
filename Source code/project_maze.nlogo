@@ -2,8 +2,15 @@
 ;; http://ccl.northwestern.edu/netlogo/models/community/BAM%20Maze%20Generator2
 
 patches-own [ xxx ]
-links-own [midptx midpty midptx1 midpty1 midptx2 midpty2]
+turtles-own [
+  distfood
+]
+links-own [midptx midpty midptx1 midpty1 midptx2 midpty2 ]
 
+globals [avgfooddist]
+to foodupdate
+  ask turtles [set distfood min list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height]
+end
 to setup-maze
   clear-all
 
@@ -39,15 +46,19 @@ make-edges
 end
 
 
+
 to setup-start-finish
+
   ask patches with [pxcor = max-pxcor and pycor = Right-Height] [
     set pcolor red
-    ask neighbors [ set pcolor black ]
-  ]
+   ask neighbors [ set pcolor black ]
+ ]
   ask patches with [pxcor = min-pxcor and pycor = Left-Height] [
     set pcolor red
     ask neighbors [ set pcolor black ]
   ]
+
+
 end
 
 to make-maze
@@ -123,7 +134,7 @@ to make-edges
     let nearest-neighbor min-n-of 15 other turtles [ distance myself ]
     create-links-with nearest-neighbor
 
-]
+  ]
 
   ask links [
     set color yellow
@@ -178,8 +189,14 @@ end
 to make-turtles
   create-turtles num-agents[set shape "dot" setxy random-xcor random-ycor
   set color yellow]
-  ask turtles[if[ pcolor ] of patch-here = white [ die ]]
 
+  ask turtles[
+    if[ pcolor ] of patch-here = white [ die ]
+
+  ]
+
+  foodupdate
+  make-edges
     end
 
 to-report edges
@@ -210,9 +227,38 @@ to go
 
 
   ]
+  foodupdate
 
 make-edges
+
   tick
+ evolution
+end
+
+
+to evolution
+  ask turtles [set distfood min list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height]
+  if ticks - (floor (ticks / 4)) * 4 = 0 [
+    print(avgfooddist)
+    ask turtles with [distfood < avgfooddist / count turtles][
+      if random-float 1 < prob-reproduce [hatch 1[set shape "dot" setxy [xcor] of myself + random-float 0.2 - 0.1 [ycor] of myself + random-float 0.2 - 0.1
+      set color yellow]]]
+    ;ask turtles with [distfood > avgfooddist / count turtles][die]
+
+
+]
+end
+
+
+to-report avgfood
+  set avgfooddist 0
+
+  ask turtles [
+    set avgfooddist avgfooddist + distfood]
+
+  ifelse count turtles = 0 [report 0]
+  [report avgfooddist / count turtles]
+
 end
 
 ; we need to program:
@@ -223,8 +269,8 @@ end
 GRAPHICS-WINDOW
 119
 16
-527
-425
+620
+518
 -1
 -1
 23.53
@@ -237,12 +283,12 @@ GRAPHICS-WINDOW
 0
 0
 1
--8
-8
--8
-8
-0
-0
+-10
+10
+-10
+10
+1
+1
 1
 ticks
 30.0
@@ -355,33 +401,16 @@ NIL
 NIL
 1
 
-BUTTON
-10
-312
-85
-345
-connect
-connect
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 SLIDER
-546
-167
-718
-200
+925
+416
+1097
+449
 num-agents
 num-agents
 0
 6000
-1261.0
+1834.0
 1
 1
 NIL
@@ -402,52 +431,99 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
 SLIDER
-545
-129
-717
-162
+924
+378
+1096
+411
 prob-reproduce
 prob-reproduce
 0
 1
-0.08
+0.26
 0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-546
-84
-718
-117
+925
+333
+1097
+366
 prob_static
 prob_static
 0
 1
-0.586
+0.191
 0.001
 1
 NIL
 HORIZONTAL
 
 SLIDER
-546
-40
-718
-73
+925
+289
+1097
+322
 prob_random
 prob_random
 0
 1
-0.567
+0.401
 0.001
 1
 NIL
 HORIZONTAL
+
+MONITOR
+930
+483
+1097
+528
+Average distance from food
+avgfood
+5
+1
+11
+
+PLOT
+921
+10
+1235
+274
+Average Distance from Food
+NIL
+NIL
+0.0
+100.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot avgfood"
+
+PLOT
+631
+20
+831
+170
+Count Turtles
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
 
 @#$#@#$#@
 @#$#@#$#@
