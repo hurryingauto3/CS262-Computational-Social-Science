@@ -174,60 +174,6 @@ to make-edges
   ask turtles[ if link-neighbors = nobody[die]]
 end
 
-to make-edges2
- ask turtles[
-    let nearest-neighbor min-n-of 15 other turtles [ distance myself ]
-    create-links-with nearest-neighbor with [not link-neighbor? myself]
-]
-
-  ask links [
-    set color yellow
-
-    ; finds out the midpoint of a link
-    set midptx (([xcor] of end2 + [xcor] of end1) / 2)
-    set midpty (([ycor] of end2 + [ycor] of end1) / 2)
-    let m_midpty midpty
-    let m_midptx midptx
-
-    set midptx1 (([xcor] of end1 + midptx) / 2)
-    set midpty1 (([ycor] of end1 + midpty) / 2)
-    let m_midpty1 midpty1
-    let m_midptx1 midptx1
-
-    set midptx2 (([xcor] of end2 + midptx) / 2)
-    set midpty2 (([ycor] of end2 + midpty) / 2)
-    let m_midpty2 midpty2
-    let m_midptx2 midptx2
-
-    ; checks if midpoint lies over a white patch
-    ask patch midptx midpty [if pcolor = white [
-      ask links with [midptx = m_midptx and midpty = m_midpty]
-      [
-        ; kills the link if its over a white patch
-        die
-      ]
-    ]]
-
-    ask patch midptx1 midpty1 [if pcolor = white [
-      ask links with [midptx1 = m_midptx1 and midpty1 = m_midpty1]
-      [
-        ; kills the link if its over a white patch
-        die
-      ]
-    ]]
-
-    ask patch midptx2 midpty2 [if pcolor = white [
-      ask links with [midptx2 = m_midptx2 and midpty2 = m_midpty2]
-      [
-        ; kills the link if its over a white patch
-        die
-      ]
-      ]
-    ]
-  ]
-
-  ask turtles[ if link-neighbors = nobody[die]]
-end
 
 to make-turtles
   create-turtles num-agents[set shape "dot" setxy random-xcor random-ycor
@@ -243,7 +189,7 @@ to-report edges
 end
 
 to go
-  if ticks = 50[stop]
+  if ticks = 100[stop]
   ask turtles[
     if [pcolor] of patch-here = white [die]
     if random-float 1 > prob_static and [pcolor] of patch-here != red[
@@ -265,7 +211,7 @@ to go
 
   ]
 
-make-edges2
+make-edges
   tick
 end
 
@@ -275,13 +221,13 @@ end
 ;
 @#$#@#$#@
 GRAPHICS-WINDOW
-117
-12
-582
-478
+119
+16
+527
+425
 -1
 -1
-9.0
+23.53
 1
 10
 1
@@ -291,10 +237,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--10
-10
--10
-10
+-8
+8
+-8
+8
 0
 0
 1
@@ -427,15 +373,15 @@ NIL
 1
 
 SLIDER
-1
-482
-173
-515
+546
+167
+718
+200
 num-agents
 num-agents
 0
 6000
-1108.0
+1261.0
 1
 1
 NIL
@@ -459,45 +405,45 @@ NIL
 1
 
 SLIDER
-588
-318
-760
-351
+545
+129
+717
+162
 prob-reproduce
 prob-reproduce
 0
 1
-0.16
+0.08
 0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-715
-195
-887
-228
+546
+84
+718
+117
 prob_static
 prob_static
 0
 1
-0.389
+0.586
 0.001
 1
 NIL
 HORIZONTAL
 
 SLIDER
-867
-297
-1039
-330
+546
+40
+718
+73
 prob_random
 prob_random
 0
 1
-0.624
+0.567
 0.001
 1
 NIL
