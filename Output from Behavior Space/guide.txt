@@ -1,0 +1,9 @@
+The data in the csv is basically the data of 320 different runs with combinations of:
+Prob_static in range 0 to 0.7 with increments of 0.1
+Prob_random in range 0 to 0.7 with increments of 0.1
+Prob_reproduction in range 0 to 0.4 with increments of 0.1
+Initial number of agents are set to be 1000
+
+note that all combinations of above mentioned settings are run
+however each combination is run once due to computational limitations
+(320 runs took almost an hour)
