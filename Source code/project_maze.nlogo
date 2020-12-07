@@ -2,18 +2,13 @@
 ;; http://ccl.northwestern.edu/netlogo/models/community/BAM%20Maze%20Generator2
 
 patches-own [ xxx ]
-turtles-own [
-  distfood
-]
+turtles-own [distfood]
 links-own [midptx midpty midptx1 midpty1 midptx2 midpty2 ]
-
 globals [avgfooddist]
-to foodupdate
-  ask turtles [set distfood min list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height]
-end
+
+
 to setup-maze
   clear-all
-
   ;; set sides with starting turtles
   ask patches with [count neighbors != 8]
     [ set pcolor white
@@ -21,34 +16,25 @@ to setup-maze
   ]
   setup-start-finish
   ;; sprout turtles
-  ask n-of edges (patches with [pcolor = white]) [
-    sprout 1
-      [ set color blue
-        facexy -1 * pxcor pycor
-        fd 1 ]
+  ask n-of edges (patches with [pcolor = white])
+  [sprout 1
+      [set color blue
+       facexy -1 * pxcor pycor
+       fd 1 ]
   ]
 
-  ;; set top and bottom white and entrence exit
+  ;; set top and bottom white and entrance exit
   ask patches with [pycor = max-pycor or pycor = min-pycor] [
     set pcolor white
   ]
+
   repeat 500[make-maze]
+
   kill
   reset-ticks
 end
 
-to add-nuclei
-make-turtles
-end
-
-to connect
-make-edges
-end
-
-
-
 to setup-start-finish
-
   ask patches with [pxcor = max-pxcor and pycor = Right-Height] [
     set pcolor red
    ask neighbors [ set pcolor black ]
@@ -57,8 +43,6 @@ to setup-start-finish
     set pcolor red
     ask neighbors [ set pcolor black ]
   ]
-
-
 end
 
 to make-maze
@@ -133,12 +117,10 @@ to make-edges
  ask turtles[
     let nearest-neighbor min-n-of 15 other turtles [ distance myself ]
     create-links-with nearest-neighbor
-
   ]
 
   ask links [
     set color yellow
-
     ; finds out the midpoint of a link
     set midptx (([xcor] of end2 + [xcor] of end1) / 2)
     set midpty (([ycor] of end2 + [ycor] of end1) / 2)
@@ -185,6 +167,13 @@ to make-edges
   ask turtles[ if link-neighbors = nobody[die]]
 end
 
+to add-nuclei
+  make-turtles
+end
+
+to foodupdate
+  ask turtles [set distfood min list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height]
+end
 
 to make-turtles
   create-turtles num-agents[set shape "dot" setxy random-xcor random-ycor
@@ -206,7 +195,7 @@ to-report edges
 end
 
 to go
-  if ticks = 100[stop]
+  if ticks = 50[stop]
   ask turtles[
     if [pcolor] of patch-here = white [die]
     if random-float 1 > prob_static and [pcolor] of patch-here != red[
@@ -221,11 +210,9 @@ to go
       if [pcolor] of patch-ahead 0.3 != white [fd 0.3] ]
     ]
 
-    if count link-neighbors > 35 and random-float 1 < prob-reproduce [hatch 1[set shape "dot" setxy [xcor] of myself + random-float 0.2 - 0.1 [ycor] of myself + random-float 0.2 - 0.1
+    ;if count link-neighbors > 35 and random-float 1 < prob-reproduce [hatch 1[set shape "dot" setxy [xcor] of myself + random-float 0.2 - 0.1 [ycor] of myself + random-float 0.2 - 0.1
 
-      set color yellow]]
-
-
+     ; set color yellow]]
   ]
   foodupdate
 
@@ -240,8 +227,9 @@ to evolution
   ask turtles [set distfood min list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height]
   if ticks - (floor (ticks / 4)) * 4 = 0 [
     print(avgfooddist)
-    ask turtles with [distfood < avgfooddist / count turtles][
-      if random-float 1 < prob-reproduce [hatch 1[set shape "dot" setxy [xcor] of myself + random-float 0.2 - 0.1 [ycor] of myself + random-float 0.2 - 0.1
+    ask n-of 100 turtles with [distfood < avgfooddist / count turtles][
+      if random-float 1 < prob-reproduce [hatch 1[set shape "dot" let x [xcor] of myself + random-float 0.2 - 0.1 let y [ycor] of myself + random-float 0.2 - 0.1
+        ifelse abs x < max-pxcor and abs y < max-pycor [setxy x y][setxy random-xcor random-ycor]
       set color yellow]]]
     ;ask turtles with [distfood > avgfooddist / count turtles][die]
 
@@ -269,8 +257,8 @@ end
 GRAPHICS-WINDOW
 119
 16
-620
-518
+479
+377
 -1
 -1
 23.53
@@ -283,10 +271,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--10
-10
--10
-10
+-7
+7
+-7
+7
 1
 1
 1
@@ -410,7 +398,7 @@ num-agents
 num-agents
 0
 6000
-1834.0
+1000.0
 1
 1
 NIL
@@ -442,7 +430,7 @@ prob-reproduce
 prob-reproduce
 0
 1
-0.26
+0.0
 0.01
 1
 NIL
@@ -457,7 +445,7 @@ prob_static
 prob_static
 0
 1
-0.191
+0.611
 0.001
 1
 NIL
@@ -472,7 +460,7 @@ prob_random
 prob_random
 0
 1
-0.401
+0.7
 0.001
 1
 NIL
@@ -836,6 +824,59 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup-maze
+add-nuclei</setup>
+    <go>go</go>
+    <timeLimit steps="50"/>
+    <metric>avgfooddist / count turtles</metric>
+    <steppedValueSet variable="prob_random" first="0" step="0.1" last="0.7"/>
+    <enumeratedValueSet variable="Difficulty">
+      <value value="&quot;Easy&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="prob-reproduce" first="0" step="0.1" last="0.4"/>
+    <enumeratedValueSet variable="num-agents">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="prob_static" first="0" step="0.1" last="0.7"/>
+    <enumeratedValueSet variable="Right-Height">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Left-Height">
+      <value value="0"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup-maze
+add-nuclei</setup>
+    <go>go</go>
+    <final>export-world "C:/Users/DELL 5559/Desktop/jdkd.csv"</final>
+    <timeLimit steps="50"/>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="prob_random">
+      <value value="0.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Difficulty">
+      <value value="&quot;Easy&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="prob-reproduce">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-agents">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="prob_static">
+      <value value="0.611"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Right-Height">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Left-Height">
+      <value value="0"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
