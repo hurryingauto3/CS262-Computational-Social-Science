@@ -186,8 +186,9 @@ to add-nuclei
     end
 
 to-report edges
-    report count patches with [count neighbors != 8] - 6
-
+    if Difficulty = "Easy" [ report count patches with [count neighbors != 8] - 6 ]
+    if Difficulty = "Medium" [ report max-pycor / 3 ]
+    if Difficulty = "Hard" [ report 1 ]
 end
 
 to reproduction
@@ -332,6 +333,33 @@ max-pycor - 2
 1
 NIL
 VERTICAL
+
+CHOOSER
+11
+173
+103
+218
+Difficulty
+Difficulty
+"Easy" "Medium" "Hard"
+0
+
+BUTTON
+4
+391
+105
+424
+Export Maze
+let namer ( word Difficulty Left-Height Right-Height \"_\" )\nexport-view ( word namer substring date-and-time 6 12 \"_Maze.png\" )
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 BUTTON
 11
