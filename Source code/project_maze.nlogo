@@ -219,7 +219,7 @@ to go
 make-edges
 
   tick
- evolution
+
 end
 
 
@@ -398,7 +398,7 @@ num-agents
 num-agents
 0
 6000
-1000.0
+1070.0
 1
 1
 NIL
@@ -445,7 +445,7 @@ prob_static
 prob_static
 0
 1
-0.611
+0.019
 0.001
 1
 NIL
@@ -460,7 +460,7 @@ prob_random
 prob_random
 0
 1
-0.7
+0.0
 0.001
 1
 NIL
@@ -831,15 +831,15 @@ add-nuclei</setup>
     <go>go</go>
     <timeLimit steps="50"/>
     <metric>avgfooddist / count turtles</metric>
-    <steppedValueSet variable="prob_random" first="0" step="0.1" last="0.7"/>
+    <steppedValueSet variable="prob_random" first="0" step="0.1" last="0.9"/>
     <enumeratedValueSet variable="Difficulty">
       <value value="&quot;Easy&quot;"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="prob-reproduce" first="0" step="0.1" last="0.4"/>
+    <steppedValueSet variable="prob-reproduce" first="0" step="0.1" last="0.5"/>
     <enumeratedValueSet variable="num-agents">
       <value value="1000"/>
     </enumeratedValueSet>
-    <steppedValueSet variable="prob_static" first="0" step="0.1" last="0.7"/>
+    <steppedValueSet variable="prob_static" first="0" step="0.1" last="0.9"/>
     <enumeratedValueSet variable="Right-Height">
       <value value="0"/>
     </enumeratedValueSet>
@@ -853,6 +853,32 @@ add-nuclei</setup>
     <go>go</go>
     <final>export-world "C:/Users/DELL 5559/Desktop/jdkd.csv"</final>
     <timeLimit steps="50"/>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="prob_random">
+      <value value="0.7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Difficulty">
+      <value value="&quot;Easy&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="prob-reproduce">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="num-agents">
+      <value value="1000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="prob_static">
+      <value value="0.611"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Right-Height">
+      <value value="0"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Left-Height">
+      <value value="0"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
     <metric>count turtles</metric>
     <enumeratedValueSet variable="prob_random">
       <value value="0.7"/>
