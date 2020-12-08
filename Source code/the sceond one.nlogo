@@ -3,7 +3,6 @@ patches-own [trail-val is-food?]
 to setup
   clear-all
   ask n-of num-food-nodes patches[set trail-val 1 set is-food? true set pcolor white]
-
   ask patches[if is-food? = false [set pcolor scale-color green trail-val 0.1 5]]
   create-turtles num-nuclei [set shape "dot" set color yellow setxy random-xcor random-ycor]
   make-edges
@@ -21,20 +20,23 @@ end
 to del-edges
   ask links [die]
 end
-to go
-  ask turtles[let F [trail-val] of patch-ahead step let FL [trail-val] of patch-left-and-ahead angle-vision step let FR [trail-val] of patch-right-and-ahead angle-vision step
+
+to move
+ ask turtles[let F [trail-val] of patch-ahead step let FL [trail-val] of patch-left-and-ahead angle-vision step let FR [trail-val] of patch-right-and-ahead angle-vision step
     if F < FL and F < FR[ifelse FL > FR [lt angle-vision][rt angle-vision]]
     if F = FL and FL = FR [facexy random-xcor random-ycor]
-
-
-
     if can-move? 0.3 = true[fd 0.3 ask patch-here[set trail-val trail-val + turtle-secrete] ] facexy random-xcor random-ycor]
+end
 
-
-  diffuse trail-val 1
+to update-secretion
+diffuse trail-val 1
   ask patches
-  [ ifelse is-food? = true[set trail-val trail-val + food-secrete set trail-val trail-val * (1 - evaporation-rate)][set trail-val trail-val * (1 - evaporation-rate)
+  [ ifelse is-food? = true [set trail-val trail-val + food-secrete set trail-val trail-val * (1 - evaporation-rate)][set trail-val trail-val * (1 - evaporation-rate)
     set pcolor scale-color green trail-val 0.1 5 ]]
+end
+to go
+  move
+  update-secretion
   tick
   del-edges
   make-edges
@@ -68,25 +70,25 @@ ticks
 30.0
 
 SLIDER
-17
-198
-189
-231
+11
+117
+183
+150
 num-food-nodes
 num-food-nodes
 0
 60
-11.0
+8.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-46
-91
-109
-124
+16
+16
+79
+49
 NIL
 setup\n
 NIL
@@ -100,10 +102,10 @@ NIL
 1
 
 BUTTON
+84
+17
+147
 50
-139
-113
-172
 NIL
 go\n
 T
@@ -117,10 +119,10 @@ NIL
 0
 
 SLIDER
-18
-247
-190
-280
+12
+166
+184
+199
 angle-vision
 angle-vision
 0
@@ -132,25 +134,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-18
-291
-190
-324
+12
+210
+184
+243
 num-nuclei
 num-nuclei
 0
 5000
-892.0
+350.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-17
-329
-189
-362
+11
+248
+183
+281
 food-secrete
 food-secrete
 0
@@ -162,25 +164,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-10
-369
-182
-402
+12
+288
+184
+321
 step
 step
 0
 2
-2.0
+1.0
 0.1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-17
-422
-189
-455
+11
+329
+183
+362
 evaporation-rate
 evaporation-rate
 0
@@ -192,10 +194,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-28
-506
-200
-539
+11
+374
+183
+407
 turtle-secrete
 turtle-secrete
 0
