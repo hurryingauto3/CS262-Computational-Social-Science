@@ -243,13 +243,13 @@ to-report avgfood
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-119
-16
-479
-377
+197
+19
+604
+427
 -1
 -1
-23.53
+26.6
 1
 10
 1
@@ -270,10 +270,10 @@ ticks
 30.0
 
 BUTTON
-9
-237
-105
-270
+11
+177
+107
+210
 setup-maze
 setup-maze
 NIL
@@ -287,10 +287,10 @@ NIL
 1
 
 BUTTON
-23
-349
-86
-382
+117
+178
+186
+211
 Clean
 kill
 NIL
@@ -319,10 +319,10 @@ NIL
 VERTICAL
 
 SLIDER
-67
-12
-100
-162
+53
+13
+86
+163
 Right-Height
 Right-Height
 min-pycor + 2
@@ -335,9 +335,9 @@ VERTICAL
 
 BUTTON
 11
-277
-99
-310
+219
+108
+252
 add-nuclei
 add-nuclei
 NIL
@@ -351,10 +351,10 @@ NIL
 1
 
 SLIDER
-925
-416
-1097
-449
+12
+394
+184
+427
 num-agents
 num-agents
 0
@@ -366,10 +366,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-21
-428
-84
-461
+117
+219
+186
+253
 NIL
 go
 T
@@ -383,10 +383,10 @@ NIL
 0
 
 SLIDER
-924
-378
-1096
-411
+11
+356
+183
+389
 prob-reproduce
 prob-reproduce
 0
@@ -398,10 +398,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-925
-333
-1097
-366
+12
+311
+184
+344
 prob_static
 prob_static
 0
@@ -413,10 +413,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-925
-289
-1097
-322
+12
+267
+184
+300
 prob_random
 prob_random
 0
@@ -428,10 +428,10 @@ NIL
 HORIZONTAL
 
 MONITOR
-930
-483
-1097
-528
+834
+292
+926
+337
 Average distance from food
 avgfood
 5
@@ -439,10 +439,10 @@ avgfood
 11
 
 PLOT
-921
-10
-1235
-274
+615
+18
+929
+282
 Average Distance from Food
 NIL
 NIL
@@ -457,11 +457,11 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot avgfood"
 
 PLOT
-631
-20
-831
-170
-Count Turtles
+620
+289
+820
+439
+Count Surviving Nuclei 
 NIL
 NIL
 0.0
