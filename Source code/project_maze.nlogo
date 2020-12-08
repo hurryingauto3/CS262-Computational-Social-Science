@@ -1,10 +1,10 @@
-;; Insprired by BAM maze generator found online at:
+;; Maze Generation is insprired by BAM maze generator found online at:
 ;; http://ccl.northwestern.edu/netlogo/models/community/BAM%20Maze%20Generator2
 
 patches-own [ xxx ]
 turtles-own [distfood]
 links-own [midptx midpty midptx1 midpty1 midptx2 midpty2 ]
-globals [avgfooddist]
+globals [sumfooddist]
 
 
 to setup-maze
@@ -173,8 +173,6 @@ to foodupdate
 end
 
 to add-nuclei
-
-
   create-turtles num-agents[set shape "dot" setxy random-xcor random-ycor
   set color yellow]
   ask turtles[
@@ -191,15 +189,12 @@ to-report edges
 end
 
 to reproduction
-  ask turtles [set distfood min list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height]
   if ticks - (floor (ticks / 4)) * 4 = 0 [
-    print(avgfooddist)
-    ask n-of 100 turtles with [distfood < avgfooddist / count turtles][
+    print(sumfooddist)
+    ask n-of 100 turtles with [distfood < sumfooddist / count turtles][
       if random-float 1 < prob-reproduce [hatch 1[set shape "dot" let x [xcor] of myself + random-float 0.2 - 0.1 let y [ycor] of myself + random-float 0.2 - 0.1
         ifelse abs x < max-pxcor and abs y < max-pycor [setxy x y][setxy random-xcor random-ycor]
       set color yellow]]]
-    ;ask turtles with [distfood > avgfooddist / count turtles][die]
-
 
 ]
 end
@@ -219,26 +214,22 @@ to go
     if can-move? 0.3[
       if [pcolor] of patch-ahead 0.3 != white [fd 0.3] ]
     ]
-
-    ;if count link-neighbors > 35 and random-float 1 < prob-reproduce [hatch 1[set shape "dot" setxy [xcor] of myself + random-float 0.2 - 0.1 [ycor] of myself + random-float 0.2 - 0.1
-
-     ; set color yellow]]
   ]
   foodupdate
   make-edges
-  tick
   reproduction
+  tick
 end
 
 
 
 
 to-report avgfood
-  set avgfooddist 0
+  set sumfooddist 0
   ask turtles [
-    set avgfooddist avgfooddist + distfood]
+    set sumfooddist sumfooddist + distfood]
   ifelse count turtles = 0 [report 0]
-  [report avgfooddist / count turtles]
+  [report sumfooddist / count turtles]
 
 end
 @#$#@#$#@
@@ -359,7 +350,7 @@ num-agents
 num-agents
 0
 6000
-1758.0
+1000.0
 1
 1
 NIL
@@ -391,7 +382,7 @@ prob-reproduce
 prob-reproduce
 0
 1
-0.17
+0.15
 0.01
 1
 NIL
@@ -406,7 +397,7 @@ prob_static
 prob_static
 0
 1
-0.019
+0.6
 0.001
 1
 NIL
@@ -421,7 +412,7 @@ prob_random
 prob_random
 0
 1
-0.414
+0.6
 0.001
 1
 NIL
@@ -791,7 +782,7 @@ NetLogo 6.1.1
 add-nuclei</setup>
     <go>go</go>
     <timeLimit steps="50"/>
-    <metric>avgfooddist / count turtles</metric>
+    <metric>sumfooddist / count turtles</metric>
     <steppedValueSet variable="prob_random" first="0" step="0.1" last="0.9"/>
     <enumeratedValueSet variable="Difficulty">
       <value value="&quot;Easy&quot;"/>
