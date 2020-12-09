@@ -3,6 +3,7 @@ patches-own [trail-val is-food?]
 to setup
   clear-all
   ask n-of num-food-nodes patches[set trail-val 1 set is-food? true set pcolor white]
+
   ask patches[if is-food? = false [set pcolor scale-color green trail-val 0.1 5]]
   create-turtles num-nuclei [set shape "dot" set color yellow setxy random-xcor random-ycor]
   make-edges
@@ -20,23 +21,20 @@ end
 to del-edges
   ask links [die]
 end
-
-to move
- ask turtles[let F [trail-val] of patch-ahead step let FL [trail-val] of patch-left-and-ahead angle-vision step let FR [trail-val] of patch-right-and-ahead angle-vision step
+to go
+  ask turtles[let F [trail-val] of patch-ahead step let FL [trail-val] of patch-left-and-ahead angle-vision step let FR [trail-val] of patch-right-and-ahead angle-vision step
     if F < FL and F < FR[ifelse FL > FR [lt angle-vision][rt angle-vision]]
     if F = FL and FL = FR [facexy random-xcor random-ycor]
-    if can-move? 0.3 = true[fd 0.3 ask patch-here[set trail-val trail-val + turtle-secrete] ] facexy random-xcor random-ycor]
-end
 
-to update-secretion
-diffuse trail-val 1
+
+
+    if can-move? 0.3 = true[fd 0.3 ask patch-here[set trail-val trail-val + turtle-secrete] ] facexy random-xcor random-ycor]
+
+
+  diffuse trail-val 1
   ask patches
-  [ ifelse is-food? = true [set trail-val trail-val + food-secrete set trail-val trail-val * (1 - evaporation-rate)][set trail-val trail-val * (1 - evaporation-rate)
+  [ ifelse is-food? = true[set trail-val trail-val + food-secrete set trail-val trail-val * (1 - evaporation-rate)][set trail-val trail-val * (1 - evaporation-rate)
     set pcolor scale-color green trail-val 0.1 5 ]]
-end
-to go
-  move
-  update-secretion
   tick
   del-edges
   make-edges
@@ -78,7 +76,7 @@ num-food-nodes
 num-food-nodes
 0
 60
-8.0
+11.0
 1
 1
 NIL
@@ -127,7 +125,7 @@ angle-vision
 angle-vision
 0
 100
-31.0
+30.0
 1
 1
 NIL
@@ -142,7 +140,7 @@ num-nuclei
 num-nuclei
 0
 5000
-350.0
+900.0
 1
 1
 NIL

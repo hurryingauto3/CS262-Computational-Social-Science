@@ -1,368 +1,111 @@
-;; Maze Generation is insprired by BAM maze generator found online at:
-;; http://ccl.northwestern.edu/netlogo/models/community/BAM%20Maze%20Generator2
+patches-own [trail-val is-food?]
 
-patches-own [ xxx ]
-turtles-own [distfood]
-links-own [midptx midpty midptx1 midpty1 midptx2 midpty2 ]
-globals [sumfooddist]
-
-
-to setup-maze
+to setup
   clear-all
-  ;; set sides with starting turtles
-  ask patches with [count neighbors != 8]
-    [ set pcolor white
-      set xxx 1
-  ]
-  setup-start-finish
-  ;; sprout turtles
-  ask n-of edges (patches with [pcolor = white])
-  [sprout 1
-      [set color blue
-       facexy -1 * pxcor pycor
-       fd 1 ]
-  ]
+  ask n-of num-food-nodes patches[set trail-val 1 set is-food? true set pcolor white]
 
-  ;; set top and bottom white and entrance exit
-  ask patches with [pycor = max-pycor or pycor = min-pycor] [
-    set pcolor white
-  ]
-
-  repeat 500[make-maze]
-
-  kill
+  ask patches[if is-food? = false [set pcolor scale-color green trail-val 0.1 5]]
+  create-turtles num-nuclei [set shape "dot" set color yellow setxy random-xcor random-ycor]
+  make-edges
   reset-ticks
-end
-
-to setup-start-finish
-  ask patches with [pxcor = max-pxcor and pycor = Right-Height] [
-    set pcolor red
-   ask neighbors [ set pcolor black ]
- ]
-  ask patches with [pxcor = min-pxcor and pycor = Left-Height] [
-    set pcolor red
-    ask neighbors [ set pcolor black ]
-  ]
-end
-
-to make-maze
-  ;; die if neighbors
-  ask turtles [
-    if count turtles-on neighbors > 0
-    [ die ]
-  ]
-
-  ;; turn if facing edge
-  ask turtles [
-    if patch-ahead 1 = nobody
-    or
-    patch-left-and-ahead 45 1 = nobody
-    or
-    patch-right-and-ahead 45 1 = nobody
-    [ rt 180 ]
-  ]
-
-  ;; die if facing white
-  ask turtles [
-    if [pcolor] of patch-ahead 1 = white
-    or
-    [pcolor] of patch-left-and-ahead 45 1 = white
-    or
-    [pcolor] of patch-right-and-ahead 45 1 = white
-    or
-    [pcolor] of patch-left-and-ahead 90 1 = white
-    or
-    [pcolor] of patch-right-and-ahead 90 1 = white
-    [ die ]
-  ]
-
-
-  ;; move
-  ask turtles [
-    set pcolor white
-    set xxx 1
-    downhill4 xxx
-    ask patch-left-and-ahead 135 1 [ set xxx 1 ]
-    ask patch-right-and-ahead 135 1 [ set xxx 1 ]
-  ]
-
-  ;; sprout turtles
-  ask n-of edges (patches with [pcolor = white])
-  [
-    sprout 1
-      [ set color blue
-        let yyy random 4
-        if yyy > 2.5
-        [ set heading 0 ]
-        if yyy > 1.5 and yyy < 2.5
-        [ set heading 90 ]
-        if yyy > 0.5 and yyy < 1.5
-        [ set heading 180 ]
-        if yyy > -0.5 and yyy < 0.5
-        [ set heading 270 ]
-
-        ifelse patch-ahead 1 = nobody
-        [ rt 180 fd 1]
-        [ fd 1]
-    ]
-  ]
 
 end
-
-to kill
-  ask turtles [ die ]
-end
-
 to make-edges
  ask turtles[
-    let nearest-neighbor min-n-of 15 other turtles [ distance myself ]
+    let nearest-neighbor min-n-of 5 other turtles [ distance myself ]
     create-links-with nearest-neighbor
+    ask links [
+      set color yellow]
   ]
-
-  ask links [
-    set color yellow
-    ; finds out the midpoint of a link
-    set midptx (([xcor] of end2 + [xcor] of end1) / 2)
-    set midpty (([ycor] of end2 + [ycor] of end1) / 2)
-    let m_midpty midpty
-    let m_midptx midptx
-
-    set midptx1 (([xcor] of end1 + midptx) / 2)
-    set midpty1 (([ycor] of end1 + midpty) / 2)
-    let m_midpty1 midpty1
-    let m_midptx1 midptx1
-
-    set midptx2 (([xcor] of end2 + midptx) / 2)
-    set midpty2 (([ycor] of end2 + midpty) / 2)
-    let m_midpty2 midpty2
-    let m_midptx2 midptx2
-
-    ; checks if midpoint lies over a white patch
-    ask patch midptx midpty [if pcolor = white [
-      ask links with [midptx = m_midptx and midpty = m_midpty]
-      [
-        ; kills the link if its over a white patch
-        die
-      ]
-    ]]
-
-    ask patch midptx1 midpty1 [if pcolor = white [
-      ask links with [midptx1 = m_midptx1 and midpty1 = m_midpty1]
-      [
-        ; kills the link if its over a white patch
-        die
-      ]
-    ]]
-
-    ask patch midptx2 midpty2 [if pcolor = white [
-      ask links with [midptx2 = m_midptx2 and midpty2 = m_midpty2]
-      [
-        ; kills the link if its over a white patch
-        die
-      ]
-      ]
-    ]
-  ]
-
-  ask turtles[ if link-neighbors = nobody[die]]
 end
-
-
-to foodupdate
-  ask turtles [set distfood min list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height]
+to del-edges
+  ask links [die]
 end
-
-to add-nuclei
-  create-turtles num-agents[set shape "dot" setxy random-xcor random-ycor
-  set color yellow]
-  ask turtles[
-    if[ pcolor ] of patch-here = white [ die ]
-  ]
-
-  foodupdate
-  make-edges
-    end
-
-to-report edges
-    report count patches with [count neighbors != 8] - 6
-
-end
-
-to reproduction
-  if ticks - (floor (ticks / 4)) * 4 = 0 [
-    print(sumfooddist)
-    ask n-of 100 turtles with [distfood < sumfooddist / count turtles][
-      if random-float 1 < prob-reproduce [hatch 1[set shape "dot" let x [xcor] of myself + random-float 0.2 - 0.1 let y [ycor] of myself + random-float 0.2 - 0.1
-        ifelse abs x < max-pxcor and abs y < max-pycor [setxy x y][setxy random-xcor random-ycor]
-      set color yellow]]]
-
-]
-end
-
 to go
-  if ticks = 50[stop]
-  ask turtles[
-    if [pcolor] of patch-here = white [die]
-    if random-float 1 > prob_static and [pcolor] of patch-here != red[
+  ask turtles[let F [trail-val] of patch-ahead step let FL [trail-val] of patch-left-and-ahead angle-vision step let FR [trail-val] of patch-right-and-ahead angle-vision step
+    if F < FL and F < FR[ifelse FL > FR [lt angle-vision][rt angle-vision]]
+    if F = FL and FL = FR [facexy random-xcor random-ycor]
 
-    let face-to min-one-of link-neighbors [
-      one-of list distance patch max-pxcor Right-Height distance patch min-pxcor Left-Height
-    ]
 
-    ifelse (face-to = nobody) or random-float 1 < prob_random[facexy random-xcor random-ycor][face face-to]
 
-    if can-move? 0.3[
-      if [pcolor] of patch-ahead 0.3 != white [fd 0.3] ]
-    ]
-  ]
-  foodupdate
-  make-edges
-  reproduction
+    if can-move? 0.3 = true[fd 0.3 ask patch-here[set trail-val trail-val + turtle-secrete] ] facexy random-xcor random-ycor]
+
+
+  diffuse trail-val 1
+  ask patches
+  [ ifelse is-food? = true[set trail-val trail-val + food-secrete set trail-val trail-val * (1 - evaporation-rate)][set trail-val trail-val * (1 - evaporation-rate)
+    set pcolor scale-color green trail-val 0.1 5 ]]
   tick
-end
-
-
-
-
-to-report avgfood
-  set sumfooddist 0
-  ask turtles [
-    set sumfooddist sumfooddist + distfood]
-  ifelse count turtles = 0 [report 0]
-  [report sumfooddist / count turtles]
-
+  del-edges
+  make-edges
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-197
-19
-604
-427
+210
+10
+608
+409
 -1
 -1
-26.6
+6.0
 1
 10
 1
 1
 1
 0
-0
-0
 1
--7
-7
--7
-7
+1
+1
+-32
+32
+-32
+32
 1
 1
 1
 ticks
 30.0
 
-BUTTON
+SLIDER
 11
-177
-107
-210
-setup-maze
-setup-maze
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
 117
-178
-186
-211
-Clean
-kill
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-SLIDER
-12
-12
-45
-162
-Left-Height
-Left-Height
-min-pycor + 2
-max-pycor - 2
-0.0
-1
-1
-NIL
-VERTICAL
-
-SLIDER
-53
-13
-86
-163
-Right-Height
-Right-Height
-min-pycor + 2
-max-pycor - 2
-0.0
-1
-1
-NIL
-VERTICAL
-
-BUTTON
-11
-219
-108
-252
-add-nuclei
-add-nuclei
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-SLIDER
-12
-394
-184
-427
-num-agents
-num-agents
+183
+150
+num-food-nodes
+num-food-nodes
 0
-6000
-1000.0
+60
+11.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-117
-219
-186
-253
+16
+16
+79
+49
 NIL
-go
+setup\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+84
+17
+147
+50
+NIL
+go\n
 T
 1
 T
@@ -374,98 +117,131 @@ NIL
 0
 
 SLIDER
+12
+166
+184
+199
+angle-vision
+angle-vision
+0
+100
+30.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+12
+210
+184
+243
+num-nuclei
+num-nuclei
+0
+5000
+900.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
 11
-356
+248
 183
-389
-prob-reproduce
-prob-reproduce
+281
+food-secrete
+food-secrete
+0
+10
+3.7
+0.1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+12
+288
+184
+321
+step
+step
+0
+2
+1.0
+0.1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+11
+329
+183
+362
+evaporation-rate
+evaporation-rate
 0
 1
-0.15
+0.1
 0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-12
-311
-184
-344
-prob_static
-prob_static
-0
-1
-0.6
-0.001
-1
-NIL
-HORIZONTAL
-
-SLIDER
-12
-267
-184
-300
-prob_random
-prob_random
-0
-1
-0.6
-0.001
-1
-NIL
-HORIZONTAL
-
-MONITOR
-834
-292
-926
-337
-Average distance from food
-avgfood
-5
-1
 11
-
-PLOT
-615
-18
-929
-282
-Average Distance from Food
+374
+183
+407
+turtle-secrete
+turtle-secrete
+0
+10
+0.6
+0.1
+1
 NIL
-NIL
-0.0
-100.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot avgfood"
-
-PLOT
-620
-289
-820
-439
-Count Surviving Nuclei 
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
+HORIZONTAL
 
 @#$#@#$#@
+## WHAT IS IT?
+
+(a general understanding of what the model is trying to show or explain)
+
+## HOW IT WORKS
+
+(what rules the agents use to create the overall behavior of the model)
+
+## HOW TO USE IT
+
+(how to use the model, including a description of each of the items in the Interface tab)
+
+## THINGS TO NOTICE
+
+(suggested things for the user to notice while running the model)
+
+## THINGS TO TRY
+
+(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+
+## EXTENDING THE MODEL
+
+(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+
+## NETLOGO FEATURES
+
+(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+
+## RELATED MODELS
+
+(models in the NetLogo Models Library and elsewhere which are of related interest)
+
+## CREDITS AND REFERENCES
+
+(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
 @#$#@#$#@
 default
 true
@@ -776,85 +552,6 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
-<experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
-    <setup>setup-maze
-add-nuclei</setup>
-    <go>go</go>
-    <timeLimit steps="50"/>
-    <metric>sumfooddist / count turtles</metric>
-    <steppedValueSet variable="prob_random" first="0" step="0.1" last="0.9"/>
-    <enumeratedValueSet variable="Difficulty">
-      <value value="&quot;Easy&quot;"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="prob-reproduce" first="0" step="0.1" last="0.5"/>
-    <enumeratedValueSet variable="num-agents">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <steppedValueSet variable="prob_static" first="0" step="0.1" last="0.9"/>
-    <enumeratedValueSet variable="Right-Height">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Left-Height">
-      <value value="0"/>
-    </enumeratedValueSet>
-  </experiment>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
-    <setup>setup-maze
-add-nuclei</setup>
-    <go>go</go>
-    <final>export-world "C:/Users/DELL 5559/Desktop/jdkd.csv"</final>
-    <timeLimit steps="50"/>
-    <metric>count turtles</metric>
-    <enumeratedValueSet variable="prob_random">
-      <value value="0.7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Difficulty">
-      <value value="&quot;Easy&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="prob-reproduce">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="num-agents">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="prob_static">
-      <value value="0.611"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Right-Height">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Left-Height">
-      <value value="0"/>
-    </enumeratedValueSet>
-  </experiment>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
-    <setup>setup</setup>
-    <go>go</go>
-    <metric>count turtles</metric>
-    <enumeratedValueSet variable="prob_random">
-      <value value="0.7"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Difficulty">
-      <value value="&quot;Easy&quot;"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="prob-reproduce">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="num-agents">
-      <value value="1000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="prob_static">
-      <value value="0.611"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Right-Height">
-      <value value="0"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="Left-Height">
-      <value value="0"/>
-    </enumeratedValueSet>
-  </experiment>
-</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default

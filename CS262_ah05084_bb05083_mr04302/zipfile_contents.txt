@@ -1,0 +1,7 @@
+Zip File Contains the following:
+
+- CS262_Final_Report.pdf 
+- Maze_Solving_Simulation.nlogo
+- Minimum_Spanning_Graph_Simulation.nlogo
+- Netlogo Data Analysis.ipynb (Python Notebook used for data analysis)
+- SlimeMoldData.xlxs (Data Collected from Maze_Solving_Simulation.nlogo)
